@@ -1,7 +1,7 @@
 Package: FileArray
 Type: Package
 Title: Using filematrix as a DelayedArray Backend
-Version: 0.1.0
+Version: 0.1.1
 Author: Malte Thodberg
 Maintainer: Malte Thodberg <maltethodberg@gmail.com>
 Description: Implements a DelayedArray backend for reading and writing dense matrices in the filematrix format. Supports filematrix-backed SummarizedExperiment objects.

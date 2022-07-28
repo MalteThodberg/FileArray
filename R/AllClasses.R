@@ -72,7 +72,7 @@ setMethod("show", "FileArraySeed", function(object){
 #' @param x matrix, DelayedArray, etc.: matrix-like object to be written block-by-block to disk.
 #' @return A FileMatrix object (A 2D FileArray)
 #'
-#' @details FileArraySeed, FileArray, FileMatrix, FileRealizationSink, read-only / open connections.
+#' @details Details on FileArraySeed, FileArray, FileMatrix, FileRealizationSink, read-only / open connections, to be added later...
 #'
 #' @export
 #' @examples

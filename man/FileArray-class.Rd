@@ -24,7 +24,7 @@ A FileMatrix object (A 2D FileArray)
 FileArray allows you to use the filematrix package as a backend for DelayedArrays, similarly to the default HDF5Array package.
 }
 \details{
-FileArraySeed, FileArray, FileMatrix, FileRealizationSink, read-only / open connections.
+Details on FileArraySeed, FileArray, FileMatrix, FileRealizationSink, read-only / open connections, to be added later...
 }
 \examples{
 #### Examples ####
