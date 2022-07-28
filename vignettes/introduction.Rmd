@@ -1,0 +1,133 @@
+---
+title: FileArray - A DelayedArray backend for filematrix
+author:
+- name: Malte Thodberg
+  email: maltethodberg@gmail.com
+output:
+  BiocStyle::html_document:
+    toc_float: yes
+package: FileArray
+vignette: >
+  %\VignetteIndexEntry{User guide}
+  %\VignetteEncoding{UTF-8}  
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, echo=FALSE, results="hide"}
+knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE)
+library(BiocStyle)
+```
+
+# Introduction
+
+The FileArray package implements a `r CRANpkg("DelayedArray")` for the
+`r CRANpkg("filematrix")` R-packages for handling massive out-of-memory
+matrices.
+
+# Installation
+
+Install from github with devtools:
+
+```{r eval=FALSE}
+devtools::install_github("MalteThodberg/FileArray")
+```
+
+Load the package using
+
+# Creating a `FileArray`
+
+There a multiple ways to create a FileArray from and R matrix?
+
+```{r}
+library(FileArray)
+X <- matrix(rnorm(1000), ncol=10)
+```
+
+Using the the `realization` machinery by coercing the matrix to a
+FileArray, which will generate a temporary file backing file:
+
+```{r}
+as(X, "FileArray")
+```
+
+If you want to specify the location of the backing file you can use use
+`writeFileArray`
+
+```{r}
+my_filematrix <- tempfile()
+writeFileArray(X, filepath = my_filematrix)
+```
+
+Logical and integer matrices are supported:
+
+```{r}
+as(X > 1, "FileArray")
+
+Y <- round(X)
+storage.mode(Y) <- "integer"
+as(Y, "FileArray")
+```
+
+As are matrices with dimension names:
+
+```{r}
+rownames(X) <- sprintf("GENE_%i", seq_len(nrow(X)))
+colnames(X) <- sprintf("SAMP_%i", seq_len(ncol(X)))
+writeFileArray(X)
+```
+
+Alternatively you can directly use functions from `filematrix` and point
+to the backing file afterwards.
+
+```{r}
+my_filematrix <- tempfile()
+filematrix::fm.create.from.matrix(mat=X, filenamebase = my_filematrix)
+FileArray(my_filematrix)
+```
+
+Large .txt files can be processed similarly using
+`filematrix::fm.create.from.text.file` or large matrices can be created
+by successively adding columns to a `filematrix` (see
+<https://cran.r-project.org/web/packages/filematrix/vignettes/FM1_UsingFilematrices.html#appending-columns>)
+
+# Manipulating `FileArray`s using delayed operations and DelayedMatrixStats
+
+`FileArray`s are simply `DelayedArray` objects and can be manipulated as
+such. The usual conventions for extracting data from matrix-like objects
+work as expected:
+
+```{r}
+out <- as(X, "FileArray")
+dim(out)
+head(rownames(out))
+head(out[,1])
+```
+
+We can also perform manipulations like subsetting and arithmetic. Note
+that these operations do not affect the data in the filematrix backend;
+rather, they are delayed until the values are explicitly required, hence
+the creation of the `DelayedMatrix` object.
+
+```{r}
+out[1:5,1:5] 
+out * 2
+out %*% runif(ncol(out))
+```
+
+We can also calculate matrix summary state using the `r Biocpkg("DelayedMatrixStats")` package, which supports block-wise processing:
+
+```{r}
+library(DelayedMatrixStats)
+colSums2(out)
+rowSums2(out)
+rowVars(out)
+```
+
+# Session information
+
+```{r}
+sessionInfo()
+```
